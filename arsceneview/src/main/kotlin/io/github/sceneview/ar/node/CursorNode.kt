@@ -34,6 +34,7 @@ open class CursorNode(context: Context, coroutineScope: LifecycleCoroutineScope?
         setModel(
             context = context,
             coroutineScope = coroutineScope,
+//            glbFileLocation = "samples/ar-cursor-placement/src/main/assets/models/vt_colored_1.glb"
             glbFileLocation = "sceneview/models/cursor.glb"
         )
     }

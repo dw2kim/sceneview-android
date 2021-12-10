@@ -54,11 +54,12 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     fun actionButtonClicked(view: View? = null) {
         if (modelNode == null) {
             modelNode = cursorNode.createAnchoredNode()?.apply {
+                scale = 0.1F
                 isLoading = true
                 setModel(
                     context = requireContext(),
                     coroutineScope = lifecycleScope,
-                    glbFileLocation = "models/spiderbot.glb",
+                    glbFileLocation = "models/vt_colored_1.glb",
                     onLoaded = {
                         actionButton.text = getString(R.string.move_object)
                         actionButton.icon = resources.getDrawable(R.drawable.ic_target)
