@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">AR Cursor Placement</string>
     <string name="place_object">Place object</string>
+    <string name="delete_object">Delete All Objects</string>
 </resources>

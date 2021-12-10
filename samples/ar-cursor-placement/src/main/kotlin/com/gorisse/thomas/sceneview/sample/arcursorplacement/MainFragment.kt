@@ -17,15 +17,19 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     lateinit var sceneView: ArSceneView
     lateinit var loadingView: View
     lateinit var actionButton: ExtendedFloatingActionButton
+    lateinit var deleteObjectButton: ExtendedFloatingActionButton
+
 
     lateinit var cursorNode: CursorNode
-    var modelNodeList: MutableList<ArNode>? = null
+    var modelNodeList: MutableList<ArNode> = mutableListOf<ArNode>()
+
 
     var isLoading = false
         set(value) {
             field = value
             loadingView.isGone = !value
             actionButton.isGone = value
+            deleteObjectButton.isGone = value
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,6 +45,14 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             }
             setOnClickListener(::actionButtonClicked)
         }
+        deleteObjectButton = view.findViewById<ExtendedFloatingActionButton>(R.id.deleteObjectButton).apply {
+            val bottomMargin = (layoutParams as ViewGroup.MarginLayoutParams).bottomMargin
+            doOnApplyWindowInsets { systemBarsInsets ->
+                (layoutParams as ViewGroup.MarginLayoutParams).bottomMargin =
+                    systemBarsInsets.bottom + bottomMargin + 200
+            }
+            setOnClickListener(::deleteObjectButtonClicked)
+        }
 
         cursorNode = CursorNode(context = requireContext(), coroutineScope = lifecycleScope)
         cursorNode.onTrackingChanged = { _, isTracking ->
@@ -51,32 +63,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         sceneView.addChild(cursorNode)
     }
 
-    fun actionButtonClicked(view: View? = null) {
-        // TODO: 1. [app] Place the multiple models (Daewon)
-
-        // TODO: 2. [app] Set up the WebRTC in the app side (Shuo)
-        //     TEST: Use the RoomID to join the WebRTC
-
-        // TODO: 3. [web] P2P - Send the JSON file (Shuyue) -
-        //      ON Demo, explain that we only use P2P for the coordinates! (While joining the room, secure)
-
-        // TODO: 4. [web] Normalize the cord (Nina)
-
-        // TODO: 5. ADD: Action & ModelName & Coordinate
-        //  {
-        //    type: "add" or "remove",
-        //    data: {
-        //        id: string
-        //        key: "technician" or "hammer" or "arrow"
-        //        x: number in range of 0 to 1
-        //        y: number in range of 0 to 1
-        //    }
-        //}
-
-        // TODO: 6. REMOVE
-
-        // TODO: 7. Clean up all the models
-
+    private fun actionButtonClicked(view: View? = null) {
         val newCursorNode = cursorNode.createAnchoredNode()?.apply {
             scale = 0.1F
             isLoading = true
@@ -87,11 +74,25 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 onLoaded = {
                     actionButton.text = getString(R.string.place_object)
                     actionButton.icon = resources.getDrawable(R.drawable.ic_target)
+
+
+                    deleteObjectButton.text = getString(R.string.delete_object)
+                    deleteObjectButton.icon = resources.getDrawable(R.drawable.ic_target)
                     isLoading = false
                 }
             )
             sceneView.addChild(this)
         }
-        modelNodeList?.add(newCursorNode as ArNode)
+        modelNodeList.add(newCursorNode as ArNode)
+    }
+
+
+    private fun deleteObjectButtonClicked(view: View? = null) {
+
+        for( modelNode in modelNodeList) {
+            modelNode.destroy()
+        }
+
+        modelNodeList.clear()
     }
 }
